@@ -1,3 +1,3 @@
 > rigth click pubspec.yaml open on cmd
 > 
-    privest
+    flutter pub get
