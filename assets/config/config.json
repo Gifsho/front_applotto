@@ -1,3 +1,8 @@
 {
-    "apiEndpoint" : "http://192.168.56.2:3000"
-}
+    "apiEndpoint": "http://10.210.60.215:8081",
+    "endpoints": {
+      "registration": "http://10.210.60.215:8081/registration",
+      "login": "http://10.210.60.215:8081/login"
+    }
+  }
+  

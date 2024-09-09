@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, unused_element, use_super_parameters, unused_import
+
 import 'dart:developer';
 
 import 'package:flutter/material.dart';

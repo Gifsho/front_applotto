@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, unused_field, sort_child_properties_last
+
 import 'dart:developer' as dev;
 import 'dart:convert';
 
@@ -53,18 +55,18 @@ class _RegisterPageState extends State<RegisterPage> {
 
         if (jsonResponse['status'] == true) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Registration successful!')),
+            const SnackBar(content: Text('Registration successful!')),
           );
           navigateToLogin();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Registration failed. Please try again.')),
+            const SnackBar(content: Text('Registration failed. Please try again.')),
           );
         }
       } catch (e) {
         dev.log("Error during registration: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('An error occurred. Please try again later.')),
+          const SnackBar(content: Text('An error occurred. Please try again later.')),
         );
       }
     } else {
@@ -72,7 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
         _isNotValidata = true;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in all fields.')),
+        const SnackBar(content: Text('Please fill in all fields.')),
       );
     }
   }
@@ -91,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -106,10 +108,10 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   _buildBackButton(),
-                  SizedBox(height: 20),
-                  Text(
+                  const SizedBox(height: 20),
+                  const Text(
                     'Lotto',
                     style: TextStyle(
                       fontSize: 32,
@@ -117,28 +119,28 @@ class _RegisterPageState extends State<RegisterPage> {
                       color: Colors.black,
                     ),
                   ),
-                  Text(
+                  const Text(
                     'Welcome onboard!',
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.black54,
                     ),
                   ),
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
                   _buildTextField('Enter your fullname', nameNoCtl),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   _buildTextField('Enter your Email', emailNoCtl),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   _buildTextField('Enter your Phone', phoneNoCtl),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   _buildTextField('Enter your Password', passNoCtl,
                       obscureText: true),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   _buildTextField('Confirm Password', confpassNoCtl,
                       obscureText: true),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   _buildButton('Register', registerUser, isPrimary: true),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   _buildButton('Sign In', navigateToLogin, isPrimary: true),
                 ],
               ),
@@ -151,7 +153,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _buildBackButton() {
     return IconButton(
-      icon: Icon(Icons.arrow_back, color: Colors.black),
+      icon: const Icon(Icons.arrow_back, color: Colors.black),
       onPressed: () => Navigator.of(context).pop(),
     );
   }
@@ -170,7 +172,7 @@ class _RegisterPageState extends State<RegisterPage> {
           borderRadius: BorderRadius.circular(30),
           borderSide: BorderSide.none,
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       ),
     );
   }
@@ -184,11 +186,11 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Text(text),
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,
-          backgroundColor: Color(0xFF8064A2),
+          backgroundColor: const Color(0xFF8064A2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
-          padding: EdgeInsets.symmetric(vertical: 15),
+          padding: const EdgeInsets.symmetric(vertical: 15),
           elevation: 5,
         ),
       ),
@@ -198,7 +200,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void navigateToLogin() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => loginPage()),
+      MaterialPageRoute(builder: (context) => const loginPage()),
     );
   }
 }

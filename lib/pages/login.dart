@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types, use_build_context_synchronously, sort_child_properties_last, non_constant_identifier_names, unused_element
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -14,7 +16,7 @@ import 'package:my_project/pages/reg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class loginPage extends StatefulWidget {
-  loginPage({Key? key}) : super(key: key);
+  const loginPage({super.key});
 
   @override
   State<loginPage> createState() => _loginPageState();
@@ -25,14 +27,7 @@ class _loginPageState extends State<loginPage> {
   String text = "";
   TextEditingController emailNoCtl = TextEditingController();
   TextEditingController passNoCtl = TextEditingController();
-  bool _isNotValidata = false;
   late SharedPreferences prefs;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   initSharedPref();
-  // }
 
   @override
   void initState() {
@@ -58,7 +53,7 @@ class _loginPageState extends State<loginPage> {
   //     };
 
   //     try {
-  //       var response = await http.post(Uri.parse(login),
+  //        var response = await http.post(Uri.parse(login),
   //           headers: {"Content-Type": "application/json"},
   //           body: jsonEncode(reqBody));
 
@@ -74,26 +69,39 @@ class _loginPageState extends State<loginPage> {
   //         setState(() {
   //           text = "Login failed. Please check your credentials.";
   //         });
-  //         dev.log(
-  //             'Login failed: ${jsonResponse['message'] ?? "Unknown error"}');
+  //         dev.log('Login failed: ${jsonResponse['message'] ?? "Unknown error"}');
+  //         _showSnackBar("Login failed. Please check your credentials.");
   //       }
   //     } catch (e) {
   //       setState(() {
   //         text = "An error occurred. Please try again later.";
   //       });
   //       dev.log('Error during login: $e');
+  //       _showSnackBar("An error occurred. Please try again later.");
   //     }
   //   } else {
   //     setState(() {
   //       text = "Please enter both email and password.";
   //     });
+  //     _showSnackBar("Please enter both email and password.");
   //   }
   // }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.red),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE0E0E0),
+      backgroundColor: const Color(0xFFE0E0E0),
       body: Stack(
         children: [
           Positioned(
@@ -102,110 +110,101 @@ class _loginPageState extends State<loginPage> {
             child: Container(
               width: 200,
               height: 200,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xFFD1C4E9),
                 shape: BoxShape.circle,
               ),
             ),
           ),
           SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 100),
-                      Text(
-                        'Lotto',
-                        style: TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.bold),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 100),
+                    const Text(
+                      'Lotto',
+                      style: TextStyle(
+                          fontSize: 28, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'Welcome onboard!',
+                      style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+                    ),
+                    const SizedBox(height: 40),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      Text(
-                        'Welcome onboard!',
-                        style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-                      ),
-                      SizedBox(height: 40),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30),
+                      child: TextField(
+                        controller: emailNoCtl,
+                        decoration: const InputDecoration(
+                          hintText: 'Email',
+                          prefixIcon: Icon(Icons.person, color: Colors.grey),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 20),
                         ),
-                        child: TextField(
-                          controller: emailNoCtl,
-                          decoration: InputDecoration(
-                            hintText: 'Email',
-                            prefixIcon: Icon(Icons.person, color: Colors.grey),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 20),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: TextField(
+                        controller: passNoCtl,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          hintText: 'Password',
+                          prefixIcon: Icon(Icons.lock, color: Colors.grey),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 20),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: loginUser,
+                        child: const Text('Login',
+                            style:
+                                TextStyle(fontSize: 18, color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF7E57C2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Don't have an account? ",
+                            style: TextStyle(color: Colors.grey[600])),
+                        GestureDetector(
+                          onTap: _navigateToRegister,
+                          child: const Text(
+                            'Sign up',
+                            style: TextStyle(
+                                color: Color(0xFF7E57C2),
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 16),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: TextField(
-                          controller: passNoCtl,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: 'Password',
-                            prefixIcon: Icon(Icons.lock, color: Colors.grey),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 15, horizontal: 20),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: loginUser,
-                          child: Text('Login',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF7E57C2),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Don't have an account? ",
-                              style: TextStyle(color: Colors.grey[600])),
-                          GestureDetector(
-                            onTap: Reg,
-                            child: Text(
-                              'Sign up',
-                              style: TextStyle(
-                                  color: Color(0xFF7E57C2),
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (text.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child:
-                              Text(text, style: TextStyle(color: Colors.red)),
-                        ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -213,7 +212,7 @@ class _loginPageState extends State<loginPage> {
     );
   }
 
-  void Reg() {
+  void _navigateToRegister() {
     Navigator.push(
         context,
         MaterialPageRoute(
