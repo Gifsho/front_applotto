@@ -6,7 +6,7 @@
 >
     git pull
 
-> อัปเดทงานลง git
+> อัพเดทงานลง git
 >
     git add .
     git commit -m "My Comment to Add File"
