@@ -1,16 +1,18 @@
-# my_project
+> clone file git ลงเครื่อง
+>
+    git clone https://github.com/pattarapong1409/frontendMob.git
 
-A new Flutter project.
+> อัพเดทงานลงเครื่อง ถ้า file git มีการอัพเดท
+>
+    git pull
 
-## Getting Started
+> อัพเดทงานลง git
+>
+    git add .
+    git commit -m "My Comment to Add File"
+    git push -u origin main
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+> rigth click pubspec.yaml open on cmd
+> 
+    flutter pub get
