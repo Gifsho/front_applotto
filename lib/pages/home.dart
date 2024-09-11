@@ -34,8 +34,8 @@ class _HomePageState extends State<HomePage> {
     }
     // Set initial page with token
     currentPage = Page1(token: widget.token ?? '');
-    // currentPage = Page2(token: widget.token ?? '');
-    // currentPage = Page3(token: widget.token ?? '');
+    Page2(token: widget.token ?? '');
+    Page3(token: widget.token ?? '');
   }
 
   @override

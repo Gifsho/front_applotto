@@ -30,7 +30,7 @@ class _Page2State extends State<Page2> {
     _decodeToken();
     Configuration.getConfig().then(
       (value) {
-        dev.log(value['apiEndpoint']);
+        // dev.log(value['apiEndpoint']);
         final url = value['apiEndpoint'];
       },
     );
@@ -47,7 +47,7 @@ class _Page2State extends State<Page2> {
           isLoading = false;
         });
 
-        // dev.log('Decoded token: ${jwtDecodedToken.toString()}');
+        dev.log('Decoded token: ${jwtDecodedToken.toString()}');
         // dev.log('Email: $email');
         // dev.log('_id: $_id');
       } else {
@@ -70,40 +70,41 @@ class _Page2State extends State<Page2> {
   }
 
   Future<Map<String, dynamic>> _fetchLottos() async {
-    await _decodeToken();
+  await _decodeToken();
 
-    if (_id == null || _id!.isEmpty) {
-      throw Exception('User ID is not available');
-    }
+  if (_id == null || _id!.isEmpty) {
+    throw Exception('User ID is not available');
+  }
 
-    try {
-      final response = await http.get(Uri.parse('$ticket$_id'));
+  try {
+    final response = await http.get(Uri.parse('$ticket$_id'));
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        // dev.log('Received data: $data');
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      dev.log('Received data: $data');
 
-        // Check if the response data is a Map and contains the 'data' key
-        if (data is Map<String, dynamic> && data.containsKey('data')) {
-          final ticketData = data['data'];
+      // Check if the response data is a Map and contains the 'data' key
+      if (data is Map<String, dynamic> && data.containsKey('data')) {
+        final ticketData = data['data'];
 
-          // Check if 'ticketData' is a Map
-          if (ticketData is Map<String, dynamic>) {
-            return ticketData;
-          } else {
-            throw Exception('Invalid data format: "data" is not a map');
-          }
+        // Check if 'ticketData' is a Map
+        if (ticketData is Map<String, dynamic>) {
+          return ticketData;
         } else {
-          throw Exception('Invalid data format: no key "data"');
+          throw Exception('Invalid data format: "data" is not a map');
         }
       } else {
-        throw Exception(
-            'Failed to load lottos. Status code: ${response.statusCode}');
+        throw Exception('Invalid data format: no key "data"');
       }
-    } catch (e) {
-      throw Exception('Failed to load lottos: $e');
+    } else {
+      throw Exception(
+          'Failed to load lottos. Status code: ${response.statusCode}');
     }
+  } catch (e) {
+    throw Exception('Failed to load lottos: $e');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -133,78 +134,83 @@ class _Page2State extends State<Page2> {
               ),
             ),
             const SizedBox(height: 10),
-            
+
 //--------------------------------------------------------------------------DB//
 
             FutureBuilder<Map<String, dynamic>>(
               future: _fetchLottos(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  );
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  // Log the error for debugging
+                  dev.log('Error: ${snapshot.error}');
+                  return Center(
+                      child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('ไม่พบข้อมูลสลากกินแบ่ง'));
                 } else {
                   final ticket = snapshot.data!;
-                  final lottoNumberStr = ticket['ticket'];
+                  dev.log('data: $ticket');
 
-                  dev.log('Received ticket data: $ticket');
+                  // Ensure 'ticket' key exists and is a String
+                  if (ticket.containsKey('ticket') &&
+                      ticket['ticket'] is String) {
+                    final lottoNumberStr = ticket['ticket'];
 
-//--------------------------------------------------------------------------BOX//
-
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white, // Background color of the card
-                      boxShadow: const [
-                        BoxShadow(
-                          offset: Offset(2.0, 2.0), // Shadow offset
-                          blurRadius: 7.0, // Shadow blur radius
-                          color: Colors.black, // Shadow color with opacity
-                        ),
-                      ],
-                      borderRadius: BorderRadius.circular(8), // Optional: Rounded corners
-                    ),
-                    margin: const EdgeInsets.all(8), // Margin around the container
-                    child: Padding(
-                      padding: const EdgeInsets.all(16), // Padding inside the container
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          const Text(
-                            'Lotto Number:',
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                lottoNumberStr,
-                                style: const TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blueAccent,
-                                  shadows: <Shadow>[
-                                    Shadow(
-                                      offset: Offset(1.7, 1.7),
-                                      blurRadius: 10.0,
-                                      color: Colors.black,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white, // Background color of the card
+                        boxShadow: const [
+                          BoxShadow(
+                            offset: Offset(2.0, 2.0), // Shadow offset
+                            blurRadius: 7.0, // Shadow blur radius
+                            color: Colors.black, // Shadow color with opacity
                           ),
                         ],
+                        borderRadius: BorderRadius.circular(
+                            8), // Optional: Rounded corners
                       ),
-                    ),
-                  );
-
-//--------------------------------------------------------------------------BOX//
-
+                      margin: const EdgeInsets.all(
+                          8), // Margin around the container
+                      child: Padding(
+                        padding: const EdgeInsets.all(
+                            16), // Padding inside the container
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const Text('Lotto Number:'),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  lottoNumberStr,
+                                  style: const TextStyle(
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blueAccent,
+                                    shadows: <Shadow>[
+                                      Shadow(
+                                        offset: Offset(1.7, 1.7),
+                                        blurRadius: 10.0,
+                                        color: Colors.black,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  } else {
+                    return const Center(child: Text('ไม่มีข้อมูล'));
+                  }
                 }
               },
-            )
+            ),
           ],
         ),
       ),

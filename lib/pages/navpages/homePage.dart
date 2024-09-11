@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:my_project/config/config.dart';
 import 'package:my_project/config/configg.dart';
 import 'package:my_project/pages/checkpage/checkLotto.dart';
+import 'package:my_project/pages/navpages/another.dart';
+import 'package:my_project/pages/navpages/mylotto.dart';
 import 'package:my_project/pages/paypage/searchLotto.dart';
 import 'dart:developer' as dev;
 import 'package:http/http.dart' as http;
@@ -38,6 +40,9 @@ class _Page1State extends State<Page1> {
       },
     );
     _lottosFuture = _fetchLottos();
+    SearchLotto(token: widget.token ?? '');
+    Page2(token: widget.token ?? '');
+    Page3(token: widget.token ?? '');
   }
 
   Future<void> _decodeToken() async {
@@ -51,7 +56,7 @@ class _Page1State extends State<Page1> {
           isLoading = false;
         });
 
-        // dev.log('Decoded token: ${jwtDecodedToken.toString()}');
+        dev.log('Decoded token: ${jwtDecodedToken.toString()}');
         // dev.log('Email: $email');
         // dev.log('_id: $_id');
       } else {
@@ -222,7 +227,7 @@ class _Page1State extends State<Page1> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          const SearchLotto()), // ระบุหน้าใหม่
+                          SearchLotto(token: widget.token ?? '')), // ระบุหน้าใหม่
                 );
               },
               style: ElevatedButton.styleFrom(

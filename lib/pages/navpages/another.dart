@@ -1,12 +1,12 @@
-// ignore_for_file: unused_local_variable
-
 import 'dart:convert';
 
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:flutter/material.dart';
 import 'package:my_project/config/config.dart';
 import 'package:my_project/config/configg.dart';
+import 'package:my_project/pages/checkpage/checkLotto.dart';
 import 'package:my_project/pages/login.dart';
+import 'package:my_project/pages/paypage/searchLotto.dart';
 import 'dart:developer' as dev;
 import 'package:http/http.dart' as http;
 
@@ -23,7 +23,8 @@ class _Page3State extends State<Page3> {
   int selectedIndex = 2;
   String? email;
   String? _id;
-  String nameU = '';
+  String? nameU;
+  String? myToken;
   bool isLoading = true;
 
   @override
@@ -79,7 +80,7 @@ class _Page3State extends State<Page3> {
     }
 
     try {
-      final response = await http.get(Uri.parse('$ticket$_id'));
+      final response = await http.get(Uri.parse('$users$_id'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -145,25 +146,28 @@ class _Page3State extends State<Page3> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         );
                       } else {
-                        final ticket = snapshot.data!;
-                        final nameUser = ticket['name'];
+                        if (snapshot.hasData) {
+                          final ticket = snapshot.data!;
+                          final nameUser = ticket['name'] ??
+                              'Unknown User'; // Provide a default value
 
-                        // dev.log('Received ticket data: $ticket');
-
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Center(
-                            child: Text(
-                              nameUser,
-                              style: const TextStyle(fontSize: 18),
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                          ),
-                        );
+                            child: Center(
+                              child: Text(
+                                nameUser,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          );
+                        } else {
+                          return Text('No data available');
+                        }
                       }
                     },
                   ),
