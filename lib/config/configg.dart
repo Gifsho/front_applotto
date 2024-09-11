@@ -3,3 +3,5 @@ final registerion = url + "registration";
 final login = url + "login";
 final lottos = url + "lottos";
 final winning = url + "winning";
+final users = url + "user/";
+final ticket = url + "ticket/";

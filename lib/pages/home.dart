@@ -23,7 +23,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String? email;
   int selectedIndex = 0;
-  Widget currentPage = const Page1();
+  Widget currentPage = const SizedBox(); // Initialize with a placeholder widget
 
   @override
   void initState() {
@@ -32,6 +32,10 @@ class _HomePageState extends State<HomePage> {
       Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token!);
       email = jwtDecodedToken['email'] as String?;
     }
+    // Set initial page with token
+    currentPage = Page1(token: widget.token ?? '');
+    // currentPage = Page2(token: widget.token ?? '');
+    // currentPage = Page3(token: widget.token ?? '');
   }
 
   @override
@@ -40,32 +44,32 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         // title: const Text('Home'),
         automaticallyImplyLeading: false,
+        // actions: [_buildBackButton()],
       ),
-          bottomNavigationBar: BottomNavigationBar(
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'สลากของฉัน'),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-          ],
-          currentIndex: selectedIndex,
-	  onTap: (int index) {
-		setState(() {
-		  selectedIndex = index;
-		  if (selectedIndex == 0) {
-			currentPage = const Page1();
-		  } else if (selectedIndex == 1) {
-			currentPage = const Page2();
-		  }else if (selectedIndex == 2) {
-			currentPage = const Page3();
-		  }
-            });
-          },
-        ),
-        body: currentPage,
-      );
-    
-  
-      // body: Center(
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.document_scanner), label: 'My Tickets'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+        ],
+        currentIndex: selectedIndex,
+        onTap: (int index) {
+          setState(() {
+            selectedIndex = index;
+            if (selectedIndex == 0) {
+              currentPage = Page1(token: widget.token ?? '');
+            } else if (selectedIndex == 1) {
+              currentPage = Page2(token: widget.token ?? '');
+            } else if (selectedIndex == 2) {
+              currentPage = Page3(token: widget.token ?? '');
+            }
+          });
+        },
+      ),
+      body: currentPage,
+    );
+
+    // body: Center(
         // child: Column(
         //   mainAxisAlignment: MainAxisAlignment.center,
         //   children: [
@@ -82,7 +86,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBackButton() {
     return IconButton(
-      icon: Icon(Icons.arrow_back, color: Colors.black),
+      icon: const Icon(Icons.arrow_back, color: Colors.black),
       onPressed: () => Navigator.of(context).pop(),
     );
   }

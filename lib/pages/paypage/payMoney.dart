@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PayMoney extends StatelessWidget {
+  const PayMoney({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,11 +67,11 @@ class PayMoney extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black12,
               blurRadius: 10,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),

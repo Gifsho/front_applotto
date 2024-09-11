@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-
 import 'package:http/http.dart' as http;
 import 'dart:developer' as dev;
 
@@ -45,47 +44,47 @@ class _loginPageState extends State<loginPage> {
     prefs = await SharedPreferences.getInstance();
   }
 
-  // void loginUser() async {
-  //   if (emailNoCtl.text.isNotEmpty && passNoCtl.text.isNotEmpty) {
-  //     var reqBody = {
-  //       "email": emailNoCtl.text,
-  //       "password": passNoCtl.text,
-  //     };
+  void loginUser() async {
+    if (emailNoCtl.text.isNotEmpty && passNoCtl.text.isNotEmpty) {
+      var reqBody = {
+        "email": emailNoCtl.text,
+        "password": passNoCtl.text,
+      };
 
-  //     try {
-  //        var response = await http.post(Uri.parse(login),
-  //           headers: {"Content-Type": "application/json"},
-  //           body: jsonEncode(reqBody));
+      try {
+         var response = await http.post(Uri.parse(login),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode(reqBody));
 
-  //       var jsonResponse = jsonDecode(response.body);
-  //       if (jsonResponse['status']) {
-  //         var myToken = jsonResponse['token'];
-  //         prefs.setString('token', myToken);
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['status']) {
+          var myToken = jsonResponse['token'];
+          prefs.setString('token', myToken);
 
-  //         // Navigate to HomePage
-  //         Navigator.of(context).pushReplacement(MaterialPageRoute(
-  //             builder: (context) => HomePage(token: myToken)));
-  //       } else {
-  //         setState(() {
-  //           text = "Login failed. Please check your credentials.";
-  //         });
-  //         dev.log('Login failed: ${jsonResponse['message'] ?? "Unknown error"}');
-  //         _showSnackBar("Login failed. Please check your credentials.");
-  //       }
-  //     } catch (e) {
-  //       setState(() {
-  //         text = "An error occurred. Please try again later.";
-  //       });
-  //       dev.log('Error during login: $e');
-  //       _showSnackBar("An error occurred. Please try again later.");
-  //     }
-  //   } else {
-  //     setState(() {
-  //       text = "Please enter both email and password.";
-  //     });
-  //     _showSnackBar("Please enter both email and password.");
-  //   }
-  // }
+          // Navigate to HomePage
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => HomePage(token: myToken)));
+        } else {
+          setState(() {
+            text = "Login failed. Please check your credentials.";
+          });
+          dev.log('Login failed: ${jsonResponse['message'] ?? "Unknown error"}');
+          _showSnackBar("Login failed. Please check your credentials.");
+        }
+      } catch (e) {
+        setState(() {
+          text = "An error occurred. Please try again later.";
+        });
+        dev.log('Error during login: $e');
+        _showSnackBar("An error occurred. Please try again later.");
+      }
+    } else {
+      setState(() {
+        text = "Please enter both email and password.";
+      });
+      _showSnackBar("Please enter both email and password.");
+    }
+  }
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -220,11 +219,11 @@ class _loginPageState extends State<loginPage> {
         ));
   }
 
-  void loginUser() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ));
-  }
+  // void loginUser() {
+  //   Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => const HomePage(),
+  //       ));
+  // }
 }

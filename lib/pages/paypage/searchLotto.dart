@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:my_project/config/config.dart';
 import 'package:my_project/config/configg.dart';
@@ -7,7 +9,7 @@ import 'dart:developer' as dev;
 import 'package:http/http.dart' as http;
 
 class SearchLotto extends StatefulWidget {
-  const SearchLotto({Key? key}) : super(key: key);
+  const SearchLotto({super.key});
 
   @override
   _SearchLottoState createState() => _SearchLottoState();
@@ -36,7 +38,7 @@ class _SearchLottoState extends State<SearchLotto> {
 
       if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print('Received data: $data'); // พิมพ์ข้อมูลที่ได้รับจาก API
+      dev.log('Received data: $data'); // พิมพ์ข้อมูลที่ได้รับจาก API
 
       // ตรวจสอบโครงสร้างของข้อมูล
       if (data is Map<String, dynamic> && data.containsKey('data')) {
