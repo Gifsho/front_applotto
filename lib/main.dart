@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_project/pages/adminpages/admin1.dart';
 import 'package:my_project/pages/login.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Flutter Demo',
-        home: loginPage(),
+        home: admin1(),
         theme: ThemeData(useMaterial3: true));
   }
 }
