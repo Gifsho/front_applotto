@@ -10,6 +10,8 @@ import 'package:my_project/config/config.dart';
 import 'package:my_project/config/configg.dart';
 import 'dart:developer' as dev;
 import 'package:http/http.dart' as http;
+import 'package:my_project/pages/navpages/another.dart';
+import 'package:my_project/pages/navpages/mylotto.dart';
 
 class CheckLottoPage extends StatefulWidget {
   const CheckLottoPage({super.key, required this.token});
@@ -37,6 +39,7 @@ class _CheckLottoPageState extends State<CheckLottoPage> {
         final url = value['apiEndpoint'];
       },
     );
+    CheckLottoPage2(token: widget.token ?? '');
   }
 
   Future<void> _decodeToken() async {
@@ -222,7 +225,7 @@ class _CheckLottoPageState extends State<CheckLottoPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const CheckLottoPage2(),
+                      builder: (context) => CheckLottoPage2(token: widget.token ?? ''),
                     ),
                   );
                 },

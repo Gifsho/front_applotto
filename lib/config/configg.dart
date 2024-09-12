@@ -1,9 +1,10 @@
 final url = 'http://10.210.60.215:8081/';
 final registerion = url + "registration";
 final login = url + "login";
-final lottos = url + "lottos";
+final lottos = url + "availablelottos";
 final winning = url + "winning";
 final users = url + "user/";
 final ticket = url + "ticket/";
-final lottoSearch = url + "lotto/";
+final lottoSearch = url + "lottos/";
 final winn = url + "check-priz";
+final addwallet = url + "PlussPrizes/";
