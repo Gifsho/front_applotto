@@ -41,6 +41,7 @@ class _Page1State extends State<Page1> {
     );
     _lottosFuture = _fetchLottos();
     SearchLotto(token: widget.token ?? '');
+    CheckLottoPage(token: widget.token ?? '');
     Page2(token: widget.token ?? '');
     Page3(token: widget.token ?? '');
   }
@@ -131,7 +132,6 @@ class _Page1State extends State<Page1> {
         if (data is Map<String, dynamic> && data.containsKey('data')) {
           final lottoItems = data['data'];
           if (lottoItems != null && lottoItems is List) {
-            // Ensure all items in the list are Maps with the expected keys
             return lottoItems.map((item) {
               if (item is Map<String, dynamic>) {
                 final lottoWin = item['LottoWin'];
@@ -270,9 +270,8 @@ class _Page1State extends State<Page1> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _buildFirstPrize(lottos.isNotEmpty
-                                ? lottos[0]['LottoWin']
-                                : 'N/A'),
+                            // _buildFirstPrize(lottos.isNotEmpty ? lottos[0]['LottoWin'] : 'N/A'),
+                            _buildFirstPrize(lottos[0]['LottoWin']),
                             const SizedBox(height: 10),
                             _buildOtherPrizes(lottos),
                           ],
@@ -290,7 +289,7 @@ class _Page1State extends State<Page1> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          const CheckLottoPage()), // นำทางไปยังหน้า checkLotto
+                          CheckLottoPage(token: widget.token ?? '')), // นำทางไปยังหน้า checkLotto
                 );
               },
               style: ElevatedButton.styleFrom(

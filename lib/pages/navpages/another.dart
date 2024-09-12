@@ -49,7 +49,7 @@ class _Page3State extends State<Page3> {
           _id = jwtDecodedToken['_id'] as String?; // แยก
           isLoading = false;
         });
-        dev.log('Response data: $nameU');
+        // dev.log('Response data: $nameU');
         dev.log('Decoded token: ${jwtDecodedToken.toString()}');
         // dev.log('Email: $email');
         // dev.log('_id: $_id');
@@ -86,13 +86,11 @@ class _Page3State extends State<Page3> {
         final data = json.decode(response.body);
         // dev.log('Received data: $data');
 
-        // Check if the response data is a Map and contains the 'data' key
         if (data is Map<String, dynamic> && data.containsKey('data')) {
-          final ticketData = data['data'];
+          final usersData = data['data'];
 
-          // Check if 'ticketData' is a Map
-          if (ticketData is Map<String, dynamic>) {
-            return ticketData;
+          if (usersData is Map<String, dynamic>) {
+            return usersData;
           } else {
             throw Exception('Invalid data format: "data" is not a map');
           }
@@ -101,10 +99,10 @@ class _Page3State extends State<Page3> {
         }
       } else {
         throw Exception(
-            'Failed to load lottos. Status code: ${response.statusCode}');
+            'Failed to load. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to load lottos: $e');
+      throw Exception('Failed to load: $e');
     }
   }
 
@@ -147,8 +145,8 @@ class _Page3State extends State<Page3> {
                         );
                       } else {
                         if (snapshot.hasData) {
-                          final ticket = snapshot.data!;
-                          final nameUser = ticket['name'] ??
+                          final usersName = snapshot.data!;
+                          final nameUser = usersName['name'] ??
                               'Unknown User'; // Provide a default value
 
                           return Container(

@@ -6,3 +6,4 @@ final winning = url + "winning";
 final users = url + "user/";
 final ticket = url + "ticket/";
 final lottoSearch = url + "lotto/";
+final winn = url + "check-priz";

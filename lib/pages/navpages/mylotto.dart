@@ -70,41 +70,38 @@ class _Page2State extends State<Page2> {
   }
 
   Future<Map<String, dynamic>> _fetchLottos() async {
-  await _decodeToken();
+    await _decodeToken();
 
-  if (_id == null || _id!.isEmpty) {
-    throw Exception('User ID is not available');
-  }
+    if (_id == null || _id!.isEmpty) {
+      throw Exception('User ID is not available');
+    }
 
-  try {
-    final response = await http.get(Uri.parse('$ticket$_id'));
+    try {
+      final response = await http.get(Uri.parse('$ticket$_id'));
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      dev.log('Received data: $data');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        dev.log('Received data: $data');
 
-      // Check if the response data is a Map and contains the 'data' key
-      if (data is Map<String, dynamic> && data.containsKey('data')) {
-        final ticketData = data['data'];
+        if (data is Map<String, dynamic> && data.containsKey('data')) {
+          final ticketData = data['data'];
 
-        // Check if 'ticketData' is a Map
-        if (ticketData is Map<String, dynamic>) {
-          return ticketData;
+          if (ticketData is Map<String, dynamic>) {
+            return ticketData;
+          } else {
+            throw Exception('Invalid data format: "data" is not a map');
+          }
         } else {
-          throw Exception('Invalid data format: "data" is not a map');
+          throw Exception('Invalid data format: no key "data"');
         }
       } else {
-        throw Exception('Invalid data format: no key "data"');
+        throw Exception(
+            'Failed to load lottos. Status code: ${response.statusCode}');
       }
-    } else {
-      throw Exception(
-          'Failed to load lottos. Status code: ${response.statusCode}');
+    } catch (e) {
+      throw Exception('Failed to load lottos: $e');
     }
-  } catch (e) {
-    throw Exception('Failed to load lottos: $e');
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +148,7 @@ class _Page2State extends State<Page2> {
                   return const Center(child: Text('ไม่พบข้อมูลสลากกินแบ่ง'));
                 } else {
                   final ticket = snapshot.data!;
-                  dev.log('data: $ticket');
+                  // dev.log('data: $ticket');
 
                   // Ensure 'ticket' key exists and is a String
                   if (ticket.containsKey('ticket') &&
@@ -160,22 +157,22 @@ class _Page2State extends State<Page2> {
 
                     return Container(
                       decoration: BoxDecoration(
-                        color: Colors.white, // Background color of the card
+                        color: Colors.white, 
                         boxShadow: const [
                           BoxShadow(
-                            offset: Offset(2.0, 2.0), // Shadow offset
-                            blurRadius: 7.0, // Shadow blur radius
-                            color: Colors.black, // Shadow color with opacity
+                            offset: Offset(2.0, 2.0),
+                            blurRadius: 7.0,
+                            color: Colors.black, 
                           ),
                         ],
                         borderRadius: BorderRadius.circular(
-                            8), // Optional: Rounded corners
+                            8),
                       ),
                       margin: const EdgeInsets.all(
-                          8), // Margin around the container
+                          8), 
                       child: Padding(
                         padding: const EdgeInsets.all(
-                            16), // Padding inside the container
+                            16), 
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
