@@ -134,13 +134,13 @@ class _Page2State extends State<Page2> {
           children: [
             const Divider(color: Colors.black),
             const SizedBox(height: 10),
-            const Center(
-              child: Text(
-                'สลาก งวดวันที่ 16 มิ.ย 2558',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
+            // const Center(
+            //   child: Text(
+            //     'สลาก งวดวันที่ 16 มิ.ย 2558',
+            //     textAlign: TextAlign.center,
+            //     style: TextStyle(fontSize: 18),
+            //   ),
+            // ),
             const SizedBox(height: 10),
 
             // Use Expanded or Flexible if you need to ensure space constraints
