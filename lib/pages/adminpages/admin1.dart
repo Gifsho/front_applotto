@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:my_project/pages/login.dart';
 import 'package:my_project/pages/adminpages/admin2.dart';
 
 class Admin1 extends StatefulWidget {
@@ -161,6 +162,17 @@ class _Admin1State extends State<Admin1> {
     }
   }
 
+  void _handleLogout() {
+    // Here you can add any logout logic, such as clearing user data or token
+    // For now, we'll just navigate to the login page
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+          builder: (context) =>
+              loginPage()), // Replace LoginPage() with your actual login page widget
+      (Route<dynamic> route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -243,6 +255,8 @@ class _Admin1State extends State<Admin1> {
         onTap: (index) {
           if (index == 1) {
             _navigateToAdmin2();
+          } else if (index == 2) {
+            _handleLogout(); // Call the logout method when "ออกระบบ" is tapped
           } else {
             setState(() {
               _selectedIndex = index;

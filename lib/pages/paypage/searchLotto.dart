@@ -100,7 +100,8 @@ class _SearchLottoState extends State<SearchLotto> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message'] ?? 'Error purchasing lotto')),
+          SnackBar(
+              content: Text(result['message'] ?? 'Error purchasing lotto')),
         );
       }
     } catch (e) {
@@ -194,8 +195,8 @@ class _SearchLottoState extends State<SearchLotto> {
                               _buyLotto(lotto['LottoNumber']);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                    content: Text('ซื้อสลากเลข ${lotto['LottoNumber']}')
-                                    ),
+                                    content: Text(
+                                        'ซื้อสลากเลข ${lotto['LottoNumber']}')),
                               );
                             },
                           ),
