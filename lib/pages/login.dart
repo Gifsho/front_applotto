@@ -12,6 +12,7 @@ import 'package:my_project/config/config.dart';
 import 'package:my_project/config/configg.dart';
 import 'package:my_project/pages/home.dart';
 import 'package:my_project/pages/reg.dart';
+import 'package:my_project/pages/adminpages/admin1.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class loginPage extends StatefulWidget {
@@ -52,37 +53,54 @@ class _loginPageState extends State<loginPage> {
       };
 
       try {
-         var response = await http.post(Uri.parse(login),
+        var response = await http.post(Uri.parse(login),
             headers: {"Content-Type": "application/json"},
             body: jsonEncode(reqBody));
 
         var jsonResponse = jsonDecode(response.body);
+        dev.log(
+            'API Response: ${response.body}'); // เพิ่มการล็อกการตอบกลับทั้งหมด
+
         if (jsonResponse['status']) {
           var myToken = jsonResponse['token'];
           prefs.setString('token', myToken);
 
-          // Navigate to HomePage
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => HomePage(token: myToken)));
+          // ตรวจสอบ userType
+          String userType = jsonResponse['userType'];
+          dev.log('User Type: $userType'); // เพิ่มการล็อก userType
+
+          if (userType.toLowerCase() == 'admin') {
+            // เปลี่ยนเป็นตัวพิมพ์เล็กเพื่อการเปรียบเทียบ
+            dev.log('Navigating to AdminPage');
+            // นำทางไปยังหน้า AdminPage
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => Admin1(token: myToken)));
+          } else {
+            dev.log('Navigating to HomePage');
+            // นำทางไปยังหน้า HomePage สำหรับผู้ใช้ทั่วไป
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => HomePage(token: myToken)));
+          }
         } else {
           setState(() {
-            text = "Login failed. Please check your credentials.";
+            text = "การเข้าสู่ระบบล้มเหลว โปรดตรวจสอบข้อมูลของคุณ";
           });
-          dev.log('Login failed: ${jsonResponse['message'] ?? "Unknown error"}');
-          _showSnackBar("Login failed. Please check your credentials.");
+          dev.log(
+              'การเข้าสู่ระบบล้มเหลว: ${jsonResponse['message'] ?? "ข้อผิดพลาดที่ไม่ทราบสาเหตุ"}');
+          _showSnackBar("การเข้าสู่ระบบล้มเหลว โปรดตรวจสอบข้อมูลของคุณ");
         }
       } catch (e) {
         setState(() {
-          text = "An error occurred. Please try again later.";
+          text = "เกิดข้อผิดพลาด โปรดลองอีกครั้งในภายหลัง";
         });
-        dev.log('Error during login: $e');
-        _showSnackBar("An error occurred. Please try again later.");
+        dev.log('ข้อผิดพลาดระหว่างการเข้าสู่ระบบ: $e');
+        _showSnackBar("เกิดข้อผิดพลาด โปรดลองอีกครั้งในภายหลัง");
       }
     } else {
       setState(() {
-        text = "Please enter both email and password.";
+        text = "กรุณากรอกอีเมลและรหัสผ่าน";
       });
-      _showSnackBar("Please enter both email and password.");
+      _showSnackBar("กรุณากรอกอีเมลและรหัสผ่าน");
     }
   }
 
@@ -125,8 +143,8 @@ class _loginPageState extends State<loginPage> {
                     const SizedBox(height: 100),
                     const Text(
                       'Lotto',
-                      style: TextStyle(
-                          fontSize: 28, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                     Text(
                       'Welcome onboard!',
