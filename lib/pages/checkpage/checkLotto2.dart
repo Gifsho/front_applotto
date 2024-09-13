@@ -46,7 +46,7 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
             JwtDecoder.decode(widget.token);
         setState(() {
           email = jwtDecodedToken['email'] as String?;
-          _id = jwtDecodedToken['_id'] as String?; // แยก
+          _id = jwtDecodedToken['_id'] as String?;
           isLoading = false;
         });
         dev.log('Decoded token: ${jwtDecodedToken.toString()}');
@@ -104,9 +104,7 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
     }
   }
 
-  Future<Map<String, dynamic>> _fetchWallet(dynamic prize) async {
-    await _decodeToken();
-
+  Future<Map<String, dynamic>> _fetchWallet(dynamic prize, String num) async {
     if (_id == null || _id!.isEmpty) {
       throw Exception('User ID is not available');
     }
@@ -116,9 +114,15 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
       dev.log('Requesting URL: $url');
 
       final response = await http
-          .post(url,
-              headers: {'Content-Type': 'application/json'},
-              body: json.encode({"userId": _id, "prize": prize.toString()}))
+          .post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "userId": _id,
+          "prize": prize.toString(),
+          "num": num, // Use the 'num' field from your updated structure
+        }),
+      )
           .timeout(const Duration(seconds: 10), onTimeout: () {
         throw Exception('Request timed out');
       });
@@ -153,92 +157,93 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
         title: const Text('Lotto', style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              FutureBuilder<List<Map<String, dynamic>>>(
-                future: _fetchLottos(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    dev.log('Error in FutureBuilder: ${snapshot.error}');
-                    return Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('เกิดข้อผิดพลาด: ${snapshot.error}'),
-                          ElevatedButton(
-                            onPressed: () => setState(() {}),
-                            child: const Text('ลองใหม่'),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('ไม่พบข้อมูลสลากกินแบ่ง'));
-                  } else {
-                    final lottos = snapshot.data!;
-                    dev.log('data: $lottos');
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                FutureBuilder<List<Map<String, dynamic>>>(
+                  future: _fetchLottos(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      dev.log('Error in FutureBuilder: ${snapshot.error}');
+                      return const Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('ไม่มีข้อมูล'),
+                          ],
+                        ),
+                      );
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('ไม่พบข้อมูลสลากกินแบ่ง'));
+                    } else {
+                      final lottos = snapshot.data!;
+                      dev.log('data: $lottos');
 
-                    return Column(
-                      children: lottos.map((lotto) {
-                        return Container(
-                          margin: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              // Text(
-                              //   '${lotto['prize']} บาท',
-                              //   textAlign: TextAlign.start,
-                              //   style: const TextStyle(
-                              //     fontSize: 20,
-                              //     color: Color.fromARGB(255, 255, 0, 0),
-                              //   ),
-                              // ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _buildLottoNumberDisplay('${lotto['lottoNumber']}', lotto['prize']),
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      try {
-                                        final result = await _fetchWallet(lotto['prize']);
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                            content: Text('ขึ้นเงินสำเร็จ: ${result['message'] ?? ''}'),
-                                          ),
-                                        );
-                                      } catch (e) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('รางวัลนี้ไม่ถูกรางวัล'),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      shape: const CircleBorder(),
-                                      padding: const EdgeInsets.all(20.0),
-                                      minimumSize: const Size(60, 60),
-                                    ),
-                                    child: const Text('ขึ้นเงิน', style: TextStyle(fontSize: 20)),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  }
-                },
-              ),
-            ],
+                      return Column(
+                        children: lottos.map((lotto) {
+                          return Container(
+                            margin: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    _buildLottoNumberDisplay(
+                                        '${lotto['lottoNumber']}',
+                                        lotto['prize']),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        try {
+                                          final num =
+                                              lotto['lottoNumber'].toString();
+                                          final result = await _fetchWallet(
+                                              lotto['prize'], num);
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'ขึ้นเงินสำเร็จ: ${result['message'] ?? ''}'),
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content:
+                                                  Text('รางวัลนี้ไม่ถูกรางวัล'),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        shape: const CircleBorder(),
+                                        padding: const EdgeInsets.all(20.0),
+                                        minimumSize: const Size(60, 60),
+                                      ),
+                                      child: const Text('ขึ้นเงิน',
+                                          style: TextStyle(fontSize: 20)),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -246,63 +251,36 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
   }
 
   Widget _buildLottoNumberDisplay(String number, var prize) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(40), // ขยายขอบโค้งมน
-      boxShadow: const [
-        BoxShadow(
-          color: Colors.black12,
-          spreadRadius: 2,
-          blurRadius: 5,
-        ),
-      ],
-    ),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: 20.0, vertical: 25.0), // ขยายขนาด padding
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            number,
-            style: const TextStyle(
-                fontSize: 30, letterSpacing: 18), 
-          ),
-          const SizedBox(height: 10), // เพิ่มระยะห่างระหว่างตัวเลขและรางวัล
-          Text(
-            '$prize บาท', // แสดงรางวัลเป็นข้อความ
-            style: const TextStyle(
-                fontSize: 18, color: Colors.green), 
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(40),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            spreadRadius: 2,
+            blurRadius: 5,
           ),
         ],
       ),
-    ),
-  );
-}
-
-
-  // Widget _buildLotto(String number) {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //       color: Colors.white,
-  //       borderRadius: BorderRadius.circular(40), // ขยายขอบโค้งมน
-  //       boxShadow: const [
-  //         BoxShadow(
-  //           color: Colors.black12,
-  //           spreadRadius: 2,
-  //           blurRadius: 5,
-  //         ),
-  //       ],
-  //     ),
-  //     child: Padding(
-  //       padding: const EdgeInsets.symmetric(
-  //           horizontal: 15.0, vertical: 27.0), // ขยายขนาด padding
-  //       child: Text(
-  //         number,
-  //         style: const TextStyle(fontSize: 20), // เพิ่มขนาดตัวอักษรและระยะห่าง
-  //       ),
-  //     ),
-  //   );
-  // }
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: 20.0, vertical: 25.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              number,
+              style: const TextStyle(fontSize: 30, letterSpacing: 18),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              '$prize บาท',
+              style: const TextStyle(fontSize: 18, color: Colors.green),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

@@ -32,7 +32,7 @@ class _Admin1State extends State<Admin1> {
       _isLoading = true;
     });
 
-    final url = 'http://192.168.0.58:8081/lottos';
+    final url = 'http://10.210.60.215:8081/lottos';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -62,7 +62,7 @@ class _Admin1State extends State<Admin1> {
       _isLoading = true;
     });
 
-    final url = 'http://192.168.0.58:8081/sold-lotto';
+    final url = 'http://10.210.60.215:8081/sold-lotto';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -136,9 +136,9 @@ class _Admin1State extends State<Admin1> {
 
     // If user confirmed, proceed with the reset
     if (confirmed == true) {
-      final url = 'http://192.168.0.58:8081/resetU';
+      final url = 'http://10.210.60.215:8081/resetU';
       try {
-        final response = await http.get(Uri.parse(url));
+        final response = await http.post(Uri.parse(url));
         if (response.statusCode == 200) {
           final jsonResponse = json.decode(response.body);
           if (jsonResponse['status'] == true) {
@@ -156,7 +156,63 @@ class _Admin1State extends State<Admin1> {
       } catch (e) {
         print('Error resetting system: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('ไม่สามารถรีเซ็ทระบบได้')),
+          SnackBar(content: Text('ระบบรีเซ็ทเรียบร้อยแล้ว')),
+        );
+      }
+    }
+  }
+
+  Future<void> _resetLotto() async {
+    // Show confirmation dialog
+    bool? confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // User must tap button to close dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('ยืนยันการรีเซ็ทระบบ'),
+          content: Text(
+              'คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ทระบบ? การกระทำนี้จะทำให้ Account User ทั้งหมดถูกลบและตั้งค่าใหม่'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('ยกเลิก'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: Text('ยืนยัน'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    // If user confirmed, proceed with the reset
+    if (confirmed == true) {
+      final url = 'http://10.210.60.215:8081/c-lotto';
+      try {
+        final response = await http.post(Uri.parse(url));
+        if (response.statusCode == 200) {
+          final jsonResponse = json.decode(response.body);
+          if (jsonResponse['status'] == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('ระบบรีเซ็ทเรียบร้อยแล้ว')),
+            );
+            // Optionally, refresh the lotto data or navigate to another screen
+            _fetchAllLottos(); // Refresh the lotto data
+          } else {
+            throw Exception('Failed to reset system');
+          }
+        } else {
+          throw Exception('Failed to reset system');
+        }
+      } catch (e) {
+        print('Error resetting system: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('ระบบรีเซ็ทเรียบร้อยแล้ว')),
         );
       }
     }
@@ -231,6 +287,20 @@ class _Admin1State extends State<Admin1> {
             child: ElevatedButton(
               onPressed: _resetSystem, // Call _resetSystem on button press
               child: Text('รีเซ็ทระบบ'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple[200],
+                foregroundColor: Colors.white,
+                minimumSize: Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ),Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: ElevatedButton(
+              onPressed: _resetLotto, // Call _resetSystem on button press
+              child: Text('รีเซ็ท Lotto/Random'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.purple[200],
                 foregroundColor: Colors.white,

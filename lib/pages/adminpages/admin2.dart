@@ -26,7 +26,7 @@ class _Admin2State extends State<Admin2> {
       _isLoading = true;
     });
 
-    final url = 'http://192.168.0.58:8081/winning';
+    final url = 'http://10.210.60.215:8081/winning';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -55,7 +55,7 @@ class _Admin2State extends State<Admin2> {
       _isLoading = true;
     });
 
-    final url = 'http://192.168.0.58:8081/randomWin';
+    final url = 'http://10.210.60.215:8081/randomWin';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -85,7 +85,7 @@ class _Admin2State extends State<Admin2> {
       _isLoading = true;
     });
 
-    final url = 'http://192.168.0.58:8081/resetWin';
+    final url = 'http://10.210.60.215:8081/resetWin';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -121,9 +121,9 @@ class _Admin2State extends State<Admin2> {
         _isLoading = true;
       });
 
-      final url = 'http://192.168.0.58:8081/delAllT';
+      final url = 'http://10.210.60.215:8081/delAllT';
       try {
-        final response = await http.get(Uri.parse(url));
+        final response = await http.post(Uri.parse(url));
         if (response.statusCode == 200) {
           final jsonResponse = json.decode(response.body);
           if (jsonResponse['status'] == true) {
@@ -280,17 +280,17 @@ class _Admin2State extends State<Admin2> {
                                   prize: 'รางวัลที่ 3',
                                   number:
                                       _lotteryResult['ThirdPrize'].toString(),
-                                  amount: '5,000 บาท'),
+                                  amount: '6,000 บาท'),
                               LotteryResultItem(
                                   prize: 'รางวัลที่ 4',
                                   number:
                                       _lotteryResult['FourthPrize'].toString(),
-                                  amount: '3,000 บาท'),
+                                  amount: '4,000 บาท'),
                               LotteryResultItem(
                                   prize: 'รางวัลที่ 5',
                                   number:
                                       _lotteryResult['FifthPrize'].toString(),
-                                  amount: '1,000 บาท'),
+                                  amount: '2,000 บาท'),
                             ],
                           )
                         : Center(child: Text('ยังไม่มีรางวัลที่แสดง')),

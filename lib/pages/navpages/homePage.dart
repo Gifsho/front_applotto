@@ -401,22 +401,22 @@ Widget _buildOtherPrizes(Map<String, dynamic> lottoData) {
       switch (index) {
         case 0:
           title = 'รางวัลที่ 2';
-          prize = '5,000 \$';
+          prize = ' 8000 \$';
           winningNumber = lottoData['SecondPrize'].toString();
           break;
         case 1:
           title = 'รางวัลที่ 3';
-          prize = '2,000 \$';
+          prize = '6000 \$';
           winningNumber = lottoData['ThirdPrize'].toString();
           break;
         case 2:
           title = 'รางวัลที่ 4';
-          prize = '1,000 \$';
+          prize = '4000 \$';
           winningNumber = lottoData['FourthPrize'].toString();
           break;
         case 3:
           title = 'รางวัลที่ 5';
-          prize = '500 \$';
+          prize = '2000 \$';
           winningNumber = lottoData['FifthPrize'].toString();
           break;
         default:
