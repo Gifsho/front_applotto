@@ -79,7 +79,7 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
       final today =
           DateTime.now().toIso8601String().split('T')[0]; // YYYY-MM-DD format
 
-      final url = Uri.parse('http://10.210.60.215:8081/check-prize');
+      final url = Uri.parse('https://b-lotto.onrender.com/check-prize');
 
       final response = await http.post(url,
           headers: {'Content-Type': 'application/json'},

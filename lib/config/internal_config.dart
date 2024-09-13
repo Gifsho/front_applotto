@@ -1,1 +1,1 @@
-String API_ENDPOINT = "http://10.210.60.215:8081";
+String API_ENDPOINT = "https://b-lotto.onrender.com";

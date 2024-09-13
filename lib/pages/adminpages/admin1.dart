@@ -32,7 +32,7 @@ class _Admin1State extends State<Admin1> {
       _isLoading = true;
     });
 
-    final url = 'http://10.210.60.215:8081/lottos';
+    final url = 'https://b-lotto.onrender.com/lottos';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -62,7 +62,7 @@ class _Admin1State extends State<Admin1> {
       _isLoading = true;
     });
 
-    final url = 'http://10.210.60.215:8081/sold-lotto';
+    final url = 'https://b-lotto.onrender.com/sold-lotto';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
@@ -136,7 +136,7 @@ class _Admin1State extends State<Admin1> {
 
     // If user confirmed, proceed with the reset
     if (confirmed == true) {
-      final url = 'http://10.210.60.215:8081/resetU';
+      final url = 'https://b-lotto.onrender.com/resetU';
       try {
         final response = await http.post(Uri.parse(url));
         if (response.statusCode == 200) {
@@ -192,7 +192,7 @@ class _Admin1State extends State<Admin1> {
 
     // If user confirmed, proceed with the reset
     if (confirmed == true) {
-      final url = 'http://10.210.60.215:8081/c-lotto';
+      final url = 'https://b-lotto.onrender.com/c-lotto';
       try {
         final response = await http.post(Uri.parse(url));
         if (response.statusCode == 200) {
