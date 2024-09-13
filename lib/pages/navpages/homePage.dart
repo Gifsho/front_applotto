@@ -122,40 +122,43 @@ class _Page1State extends State<Page1> {
   }
 
   Future<List<Map<String, dynamic>>> _fetchLottos() async {
-    try {
-      final response = await http.get(Uri.parse(winning));
+  try {
+    final response = await http.get(Uri.parse(winning));
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        // dev.log('Received data: $data');
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
 
-        if (data is Map<String, dynamic> && data.containsKey('data')) {
-          final lottoItems = data['data'];
-          if (lottoItems != null && lottoItems is List) {
-            return lottoItems.map((item) {
-              if (item is Map<String, dynamic>) {
-                final lottoWin = item['LottoWin'];
-                if (lottoWin is int) {
-                  item['LottoWin'] = lottoWin.toString();
-                }
-                return item;
-              } else {
-                throw Exception('Invalid item format');
-              }
-            }).toList();
-          } else {
-            throw Exception('Invalid data format: items is null or not a list');
-          }
+      if (data is Map<String, dynamic> && data.containsKey('data')) {
+        final lottoItems = data['data'];
+        if (lottoItems != null && lottoItems is List) {
+          return lottoItems.map((item) {
+            if (item is Map<String, dynamic>) {
+              // Convert string to int if needed
+              item['LottoWin'] = int.tryParse(item['LottoWin'].toString()) ?? 0;
+              item['FirstPrize'] = int.tryParse(item['FirstPrize'].toString()) ?? 0;
+              item['SecondPrize'] = int.tryParse(item['SecondPrize'].toString()) ?? 0;
+              item['ThirdPrize'] = int.tryParse(item['ThirdPrize'].toString()) ?? 0;
+              item['FourthPrize'] = int.tryParse(item['FourthPrize'].toString()) ?? 0;
+              item['FifthPrize'] = int.tryParse(item['FifthPrize'].toString()) ?? 0;
+              return item;
+            } else {
+              throw Exception('Invalid item format');
+            }
+          }).toList();
         } else {
-          throw Exception('Invalid data format: no key "data"');
+          throw Exception('Invalid data format: items is null or not a list');
         }
       } else {
-        throw Exception('Failed to load lottos: HTTP ${response.statusCode}');
+        throw Exception('Invalid data format: no key "data"');
       }
-    } catch (e) {
-      throw Exception('Failed to load lottos: $e');
+    } else {
+      throw Exception('Failed to load lottos: HTTP ${response.statusCode}');
     }
+  } catch (e) {
+    throw Exception('Failed to load lottos: $e');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -206,11 +209,11 @@ class _Page1State extends State<Page1> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              "งวดวันที่ xx/xx/xxxx",
-              style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
+            // const Text(
+            //   "งวดวันที่ xx/xx/xxxx",
+            //   style: TextStyle(fontSize: 16),
+            //   textAlign: TextAlign.center,
+            // ),
             const SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
@@ -247,9 +250,9 @@ class _Page1State extends State<Page1> {
             const SizedBox(height: 10),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("งวดวันที่ xx/xx/xxxx", style: TextStyle(fontSize: 16)),
-              ],
+              // children: [
+              //   Text("งวดวันที่ xx/xx/xxxx", style: TextStyle(fontSize: 16)),
+              // ],
             ),
             Expanded(
               child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -273,7 +276,8 @@ class _Page1State extends State<Page1> {
                             // _buildFirstPrize(lottos.isNotEmpty ? lottos[0]['LottoWin'] : 'N/A'),
                             _buildFirstPrize(lottos[0]['LottoWin']),
                             const SizedBox(height: 10),
-                            _buildOtherPrizes(lottos),
+                            _buildOtherPrizes(lottos[0])
+                            
                           ],
                         ),
                       ),
@@ -321,7 +325,7 @@ class _Page1State extends State<Page1> {
   }
 }
 
-Widget _buildFirstPrize(String winningNumber) {
+Widget _buildFirstPrize(int winningNumber) {
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
     decoration: BoxDecoration(
@@ -350,22 +354,12 @@ Widget _buildFirstPrize(String winningNumber) {
                 color: Colors.black,
               ),
             ),
-            Row(
-              children: [
-                Text(
-                  '10000',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                  ),
-                ),Text(
-                  ' \$',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
+            Text(
+              '10,000 \$',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+              ),
             ),
           ],
         ),
@@ -374,7 +368,7 @@ Widget _buildFirstPrize(String winningNumber) {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              winningNumber,
+              winningNumber.toString(),
               style: const TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -388,7 +382,7 @@ Widget _buildFirstPrize(String winningNumber) {
   );
 }
 
-Widget _buildOtherPrizes(List<Map<String, dynamic>> lottos) {
+Widget _buildOtherPrizes(Map<String, dynamic> lottoData) {
   return GridView.builder(
     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 2,
@@ -398,14 +392,40 @@ Widget _buildOtherPrizes(List<Map<String, dynamic>> lottos) {
     ),
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
-    itemCount: lottos.length > 5 ? 4 : lottos.length - 1,
+    itemCount: 4, // For now, let's display 4 other prizes
     itemBuilder: (context, index) {
-      final prizeIndex = index + 2;
-      final prize = (8000 - (index * 2000)).toString();
-      final winningNumber = lottos.length > index + 1
-          ? lottos[index + 1]['LottoWin'].toString()
-          : 'N/A';
-      return _buildPrizeItem('รางวัลที่ $prizeIndex', '$prize \$', winningNumber);
+      String title;
+      String prize;
+      String winningNumber;
+
+      switch (index) {
+        case 0:
+          title = 'รางวัลที่ 2';
+          prize = '5,000 \$';
+          winningNumber = lottoData['SecondPrize'].toString();
+          break;
+        case 1:
+          title = 'รางวัลที่ 3';
+          prize = '2,000 \$';
+          winningNumber = lottoData['ThirdPrize'].toString();
+          break;
+        case 2:
+          title = 'รางวัลที่ 4';
+          prize = '1,000 \$';
+          winningNumber = lottoData['FourthPrize'].toString();
+          break;
+        case 3:
+          title = 'รางวัลที่ 5';
+          prize = '500 \$';
+          winningNumber = lottoData['FifthPrize'].toString();
+          break;
+        default:
+          title = '';
+          prize = '';
+          winningNumber = '';
+      }
+
+      return _buildPrizeItem(title, prize, winningNumber);
     },
   );
 }
@@ -426,8 +446,7 @@ Widget _buildPrizeItem(String title, String prize, String winningNumber) {
             Expanded(
               child: Text(
                 title,
-                style:
-                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
             ),
             Text(

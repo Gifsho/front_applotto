@@ -110,7 +110,7 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
     }
   }
 
-  Future<Map<String, dynamic>> _fetchWallet() async {
+  Future<Map<String, dynamic>> _fetchWallet(dynamic prize) async {
     await _decodeToken();
 
     if (_id == null || _id!.isEmpty) {
@@ -118,29 +118,30 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
     }
 
     try {
-      final response = await http.get(Uri.parse('$addwallet$_id'));
+      final url = Uri.parse('$addwallet');
+      dev.log('Requesting URL: $url');
+
+      final response = await http
+          .post(url,
+              headers: {'Content-Type': 'application/json'},
+              body: json.encode({"userId": _id, "prize": prize.toString()}))
+          .timeout(Duration(seconds: 10), onTimeout: () {
+        throw Exception('Request timed out');
+      });
+
+      dev.log('Response status: ${response.statusCode}');
+      dev.log('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        dev.log('Received data: $data');
-
-        if (data is Map<String, dynamic> && data.containsKey('data')) {
-          final ticketData = data['data'];
-
-          if (ticketData is Map<String, dynamic>) {
-            return ticketData;
-          } else {
-            throw Exception('Invalid data format: "data" is not a map');
-          }
-        } else {
-          throw Exception('Invalid data format: no key "data"');
-        }
+        final Map<String, dynamic> data = json.decode(response.body);
+        return data;
       } else {
         throw Exception(
-            'Failed to load lottos. Status code: ${response.statusCode}');
+            'Failed to fetch wallet. Status code: ${response.statusCode}, Body: ${response.body}');
       }
     } catch (e) {
-      throw Exception('Failed to load lottos: $e');
+      dev.log('Error in _fetchWallet: $e');
+      rethrow;
     }
   }
 
@@ -153,48 +154,18 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context); // กลับไปยังหน้าก่อนหน้า
-          },
+          onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Lotto',
-          style: TextStyle(color: Colors.black),
-        ),
+        title: const Text('Lotto', style: TextStyle(color: Colors.black)),
         centerTitle: true,
       ),
       body: Center(
-        // เปลี่ยนจาก Padding เป็น Center เพื่อให้อยู่กึ่งกลาง
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // จัดให้อยู่กึ่งกลาง
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // ตัวเลขล็อตโต้
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     _buildLottoNumberDisplay('99124'),
-              //     const SizedBox(width: 20), // เพิ่มช่องว่างระหว่างปุ่ม
-              //     // ปุ่มขึ้นเงิน
-              //     ElevatedButton(
-              //       onPressed: () {
-              //         // ฟังก์ชันการขึ้นเงิน
-              //       },
-              //       style: ElevatedButton.styleFrom(
-              //         backgroundColor: Colors.white,
-              //         shape: const CircleBorder(),
-              //         padding: const EdgeInsets.all(20), // เพิ่มขนาดปุ่ม
-              //       ),
-              //       child: const Text(
-              //         'ขึ้นเงิน',
-              //         style: TextStyle(color: Colors.black, fontSize: 16),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-
               FutureBuilder<Map<String, dynamic>>(
                 future: _fetchLottos(),
                 builder: (context, snapshot) {
@@ -227,7 +198,7 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
                         children: <Widget>[
                           Text(
                             '${lotto['prize']} บาท',
-                            textAlign: TextAlign.start, // Changed from TextAlign.end for alignment consistency
+                            textAlign: TextAlign.start,
                             style: const TextStyle(
                               fontSize: 20,
                               color: Color.fromARGB(255, 255, 0, 0),
@@ -236,58 +207,42 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _buildLottoNumberDisplay('${lotto['lottoNumber']}'),
+                              _buildLottoNumberDisplay(
+                                  '${lotto['lottoNumber']}'),
                               ElevatedButton(
-                                onPressed: () {
-                                  // ฟังก์ชันการตรวจสลากดิจิทัล
+                                onPressed: () async {
+                                  try {
+                                    final result =
+                                        await _fetchWallet(lotto['prize']);
+                                    // แสดงผลลัพธ์หรือข้อความยืนยันการขึ้นเงินสำเร็จ
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'ขึ้นเงินสำเร็จ: ${result['message'] ?? ''}')),
+                                    );
+                                  } catch (e) {
+                                    // แสดงข้อความแจ้งเตือนหากเกิดข้อผิดพลาด
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text('เกิดข้อผิดพลาด: $e')),
+                                    );
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   shape: const CircleBorder(),
-                                  padding: const EdgeInsets.all(20.0), 
+                                  padding: const EdgeInsets.all(20.0),
                                   minimumSize: const Size(60, 60),
                                 ),
-                                  child: const Text('ขึ้นเงิน',style: TextStyle(fontSize: 20), // เพิ่มขนาดตัวอักษรและระยะห่าง
-                                ),
+                                child: const Text('ขึ้นเงิน',
+                                    style: TextStyle(fontSize: 20)),
                               ), // Simplified to Text widget
                             ],
                           ),
                         ],
                       ),
                     );
-
                   }
                 },
-              ),
-              const SizedBox(height: 50),
-              // ข้อความแสดงผลการถูกรางวัล
-              const Text(
-                '99124',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'ยินดีด้วยคุณถูกรางวัลที่ 1\nเป็นจำนวนเงิน 10000 บาท',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, color: Colors.black),
-              ),
-              const SizedBox(height: 50),
-              // ปุ่มตรวจสลากดิจิทัล
-              ElevatedButton(
-                onPressed: () {
-                  // ฟังก์ชันการตรวจสลากดิจิทัล
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[100],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 50.0, vertical: 20.0), // ขยายปุ่ม
-                ),
-                child: const Text(
-                  'ตรวจสลากดิจิทัล',
-                  style: TextStyle(color: Colors.black, fontSize: 18),
-                ),
               ),
             ],
           ),
@@ -339,8 +294,7 @@ class _CheckLottoPage2State extends State<CheckLottoPage2> {
             horizontal: 15.0, vertical: 27.0), // ขยายขนาด padding
         child: Text(
           number,
-          style: const TextStyle(
-              fontSize: 20), // เพิ่มขนาดตัวอักษรและระยะห่าง
+          style: const TextStyle(fontSize: 20), // เพิ่มขนาดตัวอักษรและระยะห่าง
         ),
       ),
     );

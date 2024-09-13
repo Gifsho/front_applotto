@@ -76,8 +76,6 @@ class _CheckLottoPageState extends State<CheckLottoPage> {
   }
 
   Future<Map<String, dynamic>> _fetchLottos() async {
-    await _decodeToken();
-
     if (_id == null || _id!.isEmpty) {
       throw Exception('User ID is not available');
     }
@@ -87,17 +85,28 @@ class _CheckLottoPageState extends State<CheckLottoPage> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        // dev.log('Received data: $data');
+        dev.log('Received data: $data');
 
-        // Check if the response data is a Map and contains the 'data' key
         if (data is Map<String, dynamic> && data.containsKey('data')) {
           final ticketData = data['data'];
 
-          // Check if 'ticketData' is a Map
-          if (ticketData is Map<String, dynamic>) {
-            return ticketData;
+          if (ticketData is Map<String, dynamic> &&
+              ticketData.containsKey('tickets')) {
+            final List<dynamic> ticketsList = ticketData['tickets'];
+
+            if (ticketsList is List<dynamic>) {
+              final List<Map<String, dynamic>> tickets =
+                  ticketsList.map((e) => e as Map<String, dynamic>).toList();
+              return {
+                'name': ticketData['name'],
+                'id': ticketData['id'],
+                'tickets': tickets
+              };
+            } else {
+              throw Exception('Invalid data format: "tickets" is not a list');
+            }
           } else {
-            throw Exception('Invalid data format: "data" is not a map');
+            throw Exception('Invalid data format: no key "tickets"');
           }
         } else {
           throw Exception('Invalid data format: no key "data"');
@@ -110,35 +119,6 @@ class _CheckLottoPageState extends State<CheckLottoPage> {
       throw Exception('Failed to load lottos: $e');
     }
   }
-
-  // Future<Map<String, dynamic>> _fetchWinning() async {
-  //   try {
-  //     final response = await http.get(Uri.parse(winn));
-
-  //     if (response.statusCode == 200) {
-  //       final data = json.decode(response.body);
-  //       dev.log('xxxx: $data');
-
-  //       if (data is Map<String, dynamic> && data.containsKey('data')) {
-  //         final ticketData = data['data'];
-
-  //         // Check if 'ticketData' is a Map
-  //         if (ticketData is Map<String, dynamic>) {
-  //           return ticketData;
-  //         } else {
-  //           throw Exception('Invalid data format: "data" is not a map');
-  //         }
-  //       } else {
-  //         throw Exception('Invalid data format: no key "data"');
-  //       }
-  //     } else {
-  //       throw Exception(
-  //           'Failed to load lottos. Status code: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Failed to load lottos: $e');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -177,39 +157,47 @@ class _CheckLottoPageState extends State<CheckLottoPage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    // Log the error for debugging
                     dev.log('Error: ${snapshot.error}');
                     return Center(
                         child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  } else if (!snapshot.hasData ||
+                      (snapshot.data!['tickets'] as List<dynamic>).isEmpty) {
                     return const Center(child: Text('ไม่พบข้อมูลสลากกินแบ่ง'));
                   } else {
-                    final ticket = snapshot.data!;
-                    dev.log('data: $ticket');
+                    final tickets = snapshot.data!['tickets'] as List<dynamic>;
 
-                    // Ensure 'ticket' key exists and is a String
-                    if (ticket.containsKey('ticket') &&
-                        ticket['ticket'] is String) {
-                      final lottoNumberStr = ticket['ticket'];
+                    return ListView.builder(
+                      itemCount: tickets.length,
+                      itemBuilder: (context, index) {
+                        final ticket = tickets[index] as Map<String, dynamic>;
+                        final lottoNumber = ticket['LottoNumber'] as String;
 
-                      return Container(
-                        margin: const EdgeInsets.all(
-                            8), // Margin around the container
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _buildLottoNumberDisplay(lottoNumberStr),
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: const [
+                              BoxShadow(
+                                offset: Offset(2.0, 2.0),
+                                blurRadius: 7.0,
+                                color: Colors.black,
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          margin: const EdgeInsets.all(8),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text('Lotto Number: $lottoNumber',
+                                    style: const TextStyle(fontSize: 18)),
                               ],
                             ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return const Center(child: Text('ไม่มีข้อมูล'));
-                    }
+                          ),
+                        );
+                      },
+                    );
                   }
                 },
               ),

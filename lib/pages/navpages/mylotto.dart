@@ -70,8 +70,6 @@ class _Page2State extends State<Page2> {
   }
 
   Future<Map<String, dynamic>> _fetchLottos() async {
-    await _decodeToken();
-
     if (_id == null || _id!.isEmpty) {
       throw Exception('User ID is not available');
     }
@@ -86,10 +84,23 @@ class _Page2State extends State<Page2> {
         if (data is Map<String, dynamic> && data.containsKey('data')) {
           final ticketData = data['data'];
 
-          if (ticketData is Map<String, dynamic>) {
-            return ticketData;
+          if (ticketData is Map<String, dynamic> &&
+              ticketData.containsKey('tickets')) {
+            final List<dynamic> ticketsList = ticketData['tickets'];
+
+            if (ticketsList is List<dynamic>) {
+              final List<Map<String, dynamic>> tickets =
+                  ticketsList.map((e) => e as Map<String, dynamic>).toList();
+              return {
+                'name': ticketData['name'],
+                'id': ticketData['id'],
+                'tickets': tickets
+              };
+            } else {
+              throw Exception('Invalid data format: "tickets" is not a list');
+            }
           } else {
-            throw Exception('Invalid data format: "data" is not a map');
+            throw Exception('Invalid data format: no key "tickets"');
           }
         } else {
           throw Exception('Invalid data format: no key "data"');
@@ -132,95 +143,61 @@ class _Page2State extends State<Page2> {
             ),
             const SizedBox(height: 10),
 
-//--------------------------------------------------------------------------DB//
+            // Use Expanded or Flexible if you need to ensure space constraints
+            Expanded(
+              child: FutureBuilder<Map<String, dynamic>>(
+                future: _fetchLottos(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    dev.log('Error: ${snapshot.error}');
+                    return Center(
+                        child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
+                  } else if (!snapshot.hasData ||
+                      (snapshot.data!['tickets'] as List<dynamic>).isEmpty) {
+                    return const Center(child: Text('ไม่พบข้อมูลสลากกินแบ่ง'));
+                  } else {
+                    final tickets = snapshot.data!['tickets'] as List<dynamic>;
 
-            FutureBuilder<Map<String, dynamic>>(
-              future: _fetchLottos(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  // Log the error for debugging
-                  dev.log('Error: ${snapshot.error}');
-                  return Center(
-                      child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('ไม่พบข้อมูลสลากกินแบ่ง'));
-                } else {
-                  final ticket = snapshot.data!;
-                  // dev.log('data: $ticket');
+                    return ListView.builder(
+                      itemCount: tickets.length,
+                      itemBuilder: (context, index) {
+                        final ticket = tickets[index] as Map<String, dynamic>;
+                        final lottoNumber = ticket['LottoNumber'] as String;
 
-                  // Ensure 'ticket' key exists and is a String
-                  if (ticket.containsKey('ticket') &&
-                      ticket['ticket'] is String) {
-                    final lottoNumberStr = ticket['ticket'];
-
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white, 
-                        boxShadow: const [
-                          BoxShadow(
-                            offset: Offset(2.0, 2.0),
-                            blurRadius: 7.0,
-                            color: Colors.black, 
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: const [
+                              BoxShadow(
+                                offset: Offset(2.0, 2.0),
+                                blurRadius: 7.0,
+                                color: Colors.black,
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ],
-                        borderRadius: BorderRadius.circular(
-                            8),
-                      ),
-                      margin: const EdgeInsets.all(
-                          8), 
-                      child: Padding(
-                        padding: const EdgeInsets.all(
-                            16), 
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            const Text('Lotto Number:'),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  lottoNumberStr,
-                                  style: const TextStyle(
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blueAccent,
-                                    shadows: <Shadow>[
-                                      Shadow(
-                                        offset: Offset(1.7, 1.7),
-                                        blurRadius: 10.0,
-                                        color: Colors.black,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                          margin: const EdgeInsets.all(8),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text('Lotto Number: $lottoNumber',
+                                    style: const TextStyle(fontSize: 18)),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     );
-                  } else {
-                    return const Center(child: Text('ไม่มีข้อมูล'));
                   }
-                }
-              },
+                },
+              ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget cardItem(String title, String number, String price) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: ListTile(
-        title: Text(title),
-        subtitle: Text(number),
-        trailing: Text(price),
       ),
     );
   }

@@ -8,3 +8,4 @@ final ticket = url + "ticket/";
 final lottoSearch = url + "lottos/";
 final winn = url + "check-priz";
 final addwallet = url + "PlussPrizes/";
+final buyLotto = url + "buyLotto";
