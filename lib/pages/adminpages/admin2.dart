@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:my_project/pages/adminpages/admin1.dart';
+import 'package:my_project/pages/login.dart';
 
 class Admin2 extends StatefulWidget {
   @override
@@ -215,10 +216,19 @@ class _Admin2State extends State<Admin2> {
         // No action needed, already on Admin2
         break;
       case 2:
-        Navigator.pop(
-            context); // Navigate back (assuming it's the logout action)
+        _handleLogout();
         break;
     }
+  }
+
+  void _handleLogout() {
+    // เพิ่มโลจิกการ logout ที่นี่ (ถ้าจำเป็น) เช่น การล้างข้อมูลผู้ใช้หรือโทเค็น
+
+    // นำผู้ใช้กลับไปยังหน้า login
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => loginPage()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
