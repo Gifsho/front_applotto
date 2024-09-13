@@ -11,4 +11,8 @@ final winn = url + "check-priz";
 final randomWin = url + "randomWin";
 // final winning = url + "winning";
 final addwallet = url + "PlussPrizes/";
+<<<<<<< HEAD
 final buyLotto = url + "buyLotto";
+=======
+final buyLotto = url + "buyLotto";
+>>>>>>> 713d892693a98e007671bc0dac09f09fb69d5c13
